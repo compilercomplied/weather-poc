@@ -1,0 +1,8 @@
+
+.pin {
+	fill: var(--background-highlight);
+}
+
+.innerCircle {
+	fill: var(--background-base);
+}

@@ -1,0 +1,262 @@
+openapi: 3.0.3
+info:
+  title: Weather backend spec
+  description: |-
+    This is the spec used to build up the web ui showcased in this git repo.
+    
+    Temperature units are assumed to be in the metric system.
+  version: 1.0.0
+tags:
+  - name: location
+    description: Query geolocation information
+  - name: weather
+    description: Query location weather
+paths:
+  /location:
+    get:
+      tags:
+        - location
+      summary: Find a location using coordinates
+      operationId: getLocationByCoords
+      parameters:
+        - name: latitude
+          in: query
+          required: true
+          explode: true
+          schema:
+            type: number
+        - name: longitude
+          in: query
+          required: true
+          explode: true
+          schema:
+            type: number
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Location'
+        '400':
+          description: Invalid coordinates supplied
+        '404':
+          description: Location not found
+  /location/{locationId}:
+    get:
+      tags:
+        - location
+      summary: Get location data
+      operationId: getLocation
+      parameters:
+        - name: locationId
+          in: path
+          required: true
+          explode: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Location'
+        '404':
+          description: Location not found
+  /location/{locationId}/weather/current:
+    get:
+      tags:
+        - weather
+      parameters:
+        - name: locationId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      summary: Get current weather
+      operationId: getCurrentWeather
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CurrentWeather'
+        '404':
+          description: Unknown location
+  /location/{locationId}/weather/forecast/daily:
+    get:
+      tags:
+        - weather
+      operationId: getDailyForecast
+      parameters:
+        - name: locationId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: days
+          in: query
+          required: true
+          schema:
+            type: number
+            default: 3
+            description: Days to obtain forecast for
+            format: int32
+      summary: Get weather forecast
+      description: |-
+        Get a summary of what the sky and temperature will look like in the near future.
+        
+        Results are ordered in descending order based on date.
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ForecastData'
+        '404':
+          description: Unknown location
+  /location/{locationId}/weather/forecast/hourly:
+    get:
+      tags:
+        - weather
+      operationId: getHourlyForecast
+      parameters:
+        - name: locationId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: date
+          in: query
+          required: true
+          schema:
+            type: string
+            format: datetime
+      summary: Get hourly weather forecast for the day
+      description: |-
+        Results are ordered by time in a descending manner. 
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HourlyForecast'
+        '404':
+          description: Unknown location
+
+components:
+  schemas:
+    HourlyForecast:
+      type: object
+      properties:
+        measures:
+          type: array
+          items:
+            $ref: '#/components/schemas/HourlyMeasure'
+    HourlyMeasure:
+      type: object
+      properties:
+        timestamp:
+          type: string
+          format: date-time
+        precipitation:
+          type: number
+          format: float
+          description: Expressed in millimiters
+          example: 0.0
+        precipitationProbability:
+          type: number
+          format: float
+          description: percentage
+          example: 0.0
+        temperature:
+          type: number
+          format: float
+          example: 20.1
+    ForecastData:
+      type: object
+      properties:
+        forecast:
+          type: array
+          items:
+            $ref: '#/components/schemas/Forecast'
+    Forecast:
+      type: object
+      properties:
+        sky:
+          $ref: '#/components/schemas/Sky'
+        timestamp:
+          type: string
+          format: date
+        maxTemperature:
+          type: number
+          format: float
+          example: 19.8
+        minTemperature:
+          type: number
+          format: float
+          example: 12.3
+    CurrentWeather:
+      type: object
+      properties:
+        timestamp:
+          type: string
+          format: date-time
+        feelsLike:
+          type: number
+          example: 14.3
+        humidity:
+          type: number
+          description: Expressed as percentage
+          example: 0.95
+        temperature:
+          type: number
+          example: 14.8
+        maxTemperature:
+          type: number
+          format: float
+          example: 19.8
+        minTemperature:
+          type: number
+          format: float
+          example: 12.3
+        sky:
+          $ref: '#/components/schemas/Sky'
+    Location:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+          example: Oviedo
+        region:
+          type: string
+          example: Spain
+        geolocation:
+          $ref: '#/components/schemas/Geolocation'
+    Geolocation:
+      type: object
+      properties:
+        latitude:
+          type: number
+          format: float
+          example: 43.362390
+        longitude:
+          type: number
+          format: float
+          example: -5.843960
+    Sky:
+      type: string
+      enum:
+        - clear
+        - rainy

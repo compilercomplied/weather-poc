@@ -1,0 +1,19 @@
+.forecast {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: space-around;
+	padding: 16px;
+	background: var(--background-highlight);
+	border-radius:3px;
+}
+
+.day {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+}
+
+.icon {
+	height: 40px;
+}
