@@ -35,18 +35,6 @@ const mockedForecastWeather: ForecastData[] = [
 				minTemperature: 10,
 				sky: "clear"
 			},
-			// {
-			// 	timestamp: new Date((new Date()).setDate((new Date()).getDate()+4)),
-			// 	maxTemperature: 22,
-			// 	minTemperature: 16,
-			// 	sky: "clear"
-			// },
-			// {
-			// 	timestamp: new Date((new Date()).setDate((new Date()).getDate()+5)),
-			// 	maxTemperature: 22,
-			// 	minTemperature: 16,
-			// 	sky: "clear"
-			// }
 		]
 	}
 ];
