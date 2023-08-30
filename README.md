@@ -6,6 +6,7 @@
 1. Fake randomized api layer loading.
 1.1 Add skeletons to cover loading scenarios.
 1. Dark theme.
+1. Finish other viewport sizes css.
 
 ## Documentation
 1. Define main use cases covered and vision for the app.
